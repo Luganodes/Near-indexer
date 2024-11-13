@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+    near-indexer:
+        build: .
+        container_name: near-indexer
+        environment:
+            - MONGO_URI=${MONGO_URI}
+            - DB_NAME=${DB_NAME}
+            - VALIDATOR_ACCOUNT_ID=${VALIDATOR_ACCOUNT_ID:-luganodes.pool.near}
+            - PRIMARY_RPC=${PRIMARY_RPC}
+            - SECONDARY_RPC=${SECONDARY_RPC}
+            - PARALLEL_LIMIT=${PARALLEL_LIMIT:-35}
+            - BATCH_SIZE=${BATCH_SIZE:-10}
+            - EPOCH_BLOCKS=${EPOCH_BLOCKS:-43200}
+            - DELEGATOR_BATCH_SIZE=${DELEGATOR_BATCH_SIZE:-1000}
+            - RUST_LOG=info # Add this for better logging
+
+        volumes:
+            - ./data:/usr/local/bin/data
+        networks:
+            - near-network
+
+networks:
+    near-network:
+        driver: bridge
