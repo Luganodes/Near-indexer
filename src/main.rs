@@ -4,7 +4,7 @@ use log::{error, info};
 use mongodb::Database;
 use near_jsonrpc_client::JsonRpcClient;
 use std::sync::Arc;
-
+use tokio::time::{self, Duration};
 mod config;
 mod models;
 mod repositories;
@@ -19,7 +19,30 @@ use crate::services::{database, epoch_processor, near_rpc};
 use crate::transaction_fetcher::fetch_and_process_transactions;
 
 #[tokio::main]
+
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Run the task immediately
+    info!("Starting initial run...");
+    if let Err(e) = run_indexer().await {
+        error!("Error in initial run: {:?}", e);
+    }
+
+    // Create an interval that fires every 12 hours
+    let mut interval = time::interval(Duration::from_secs(12 * 60 * 60));
+
+    loop {
+        // Wait for the next interval
+        interval.tick().await;
+        info!("Starting scheduled run...");
+
+        // Run the indexer in a new task to prevent blocking
+        if let Err(e) = run_indexer().await {
+            error!("Error in scheduled run: {:?}", e);
+        }
+    }
+}
+
+async fn run_indexer() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
     env_logger::init();
 
