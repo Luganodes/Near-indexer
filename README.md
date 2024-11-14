@@ -19,6 +19,35 @@ Below are some use cases for the NEAR Indexer, detailing how various participant
 -   Performance data for validators
 -   Reward tracking for delegators and validators
 
+
+## Tracked Metrics
+
+### 1. Transactions
+
+We track all transactions related to stake operations:
+
+-   Delegate (Staking)
+-   Undelegate (Unstaking)
+-   Gas fees across transactions
+-   Other relevant transaction metadata
+
+### 2. Delegator Reward Metrics
+
+For each delegator, we track:
+
+-   Total Rewards Earned (Since day of stake)
+-   Tokens Withdrawn
+-   Stake related transactions
+-   Epoch wise rewards
+
+### 3. Validator Reward Metrics
+
+For validators, we track:
+
+-   Validator APY
+-   Validator Rewards
+-   Validator Uptime
+
 ## Database Collections
 
 The project utilizes several MongoDB collections to store and analyze data:
@@ -110,33 +139,6 @@ The project utilizes several MongoDB collections to store and analyze data:
 | chunkProductionRate | String   | Percentage of expected chunks that were produced       |
 | message             | String   | Additional information about the validator's status    |
 
-## Tracked Metrics
-
-### 1. Transactions
-
-We track all transactions related to stake operations:
-
--   Delegate (Staking)
--   Undelegate (Unstaking)
--   Gas fees across transactions
--   Other relevant transaction metadata
-
-### 2. Delegator Reward Metrics
-
-For each delegator, we track:
-
--   Total Rewards Earned (Since day of stake)
--   Tokens Withdrawn
--   Stake related transactions
--   Epoch wise rewards
-
-### 3. Validator Reward Metrics
-
-For validators, we track:
-
--   Validator APY
--   Validator Rewards
--   Validator Uptime
 
 ## Setup and Installation
 
