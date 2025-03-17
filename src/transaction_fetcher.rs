@@ -19,6 +19,7 @@ pub async fn fetch_and_process_transactions(
     primary_client: &JsonRpcClient,
     secondary_client: &JsonRpcClient,
 ) -> Result<Vec<Transaction>, Box<dyn Error>> {
+    // TODO uncomment this
     let last_transaction = transaction_repository::get_latest_transaction(db).await?;
     let last_block_height = last_transaction.map(|t| t.block_height).unwrap_or(0); // Default to 0 if no transactions exist
 
