@@ -13,5 +13,5 @@ pub struct DelegatorData {
     pub last_update_block: u64,
     pub epoch_id: String,
     pub rewards: String,
-    pub apy: u128, // New field for APY
+    pub apy: String, // New field for APY
 }

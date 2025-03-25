@@ -13,7 +13,7 @@ pub async fn save_validator_metrics(
     epoch_id: &str,
     delegator_data: &HashMap<String, DelegatorData>,
     epoch_timestamp: u64,
-    apy: u128, // Added APY parameter
+    apy: String, // Added APY parameter
 ) -> Result<(), mongodb::error::Error> {
     let collection: Collection<mongodb::bson::Document> = db.collection("validator_metrics");
 

@@ -253,7 +253,7 @@ pub async fn process_delegator_data(
                 last_update_block: start_block_height,
                 epoch_id: epoch_id.to_string(),
                 rewards,
-                apy,
+                apy: apy.to_string(),
             },
         );
     }
@@ -282,7 +282,7 @@ pub async fn process_delegator_data(
         epoch_id,
         &delegator_data,
         epoch_timestamp,
-        validator_apy,
+        validator_apy.to_string(),
     )
     .await?;
 
