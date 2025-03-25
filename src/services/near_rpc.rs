@@ -381,7 +381,6 @@ pub async fn get_epoch_data(
             break;
         }
 
-        // Use binary search to find the exact epoch boundary
         let boundary = find_epoch_boundary(
             current_height,
             estimated_next_epoch_start + epoch_blocks / 2, // Add some buffer

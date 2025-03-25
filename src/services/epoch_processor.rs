@@ -171,7 +171,7 @@ pub async fn process_delegator_data(
     // Get all previous transactions for initial stake calculation
     let all_prev_transactions: Vec<_> = transactions
         .iter()
-        .filter(|tx| tx.block_height <= end_block_height)
+        .filter(|tx| tx.block_height >= start_block_height && tx.block_height <= end_block_height)
         .collect();
 
     // Calculate initial stakes from all previous transactions
