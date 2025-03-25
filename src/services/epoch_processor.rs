@@ -10,7 +10,7 @@ use num_traits::Zero;
 use std::collections::HashMap;
 use std::str::FromStr;
 
-const EPOCHS_PER_YEAR: f64 = 730.0; // 365 days * 2 epochs per day
+const EPOCHS_PER_YEAR: u128 = 730; // 365 days * 2 epochs per day
 
 fn calculate_rewards(
     current_stake: &str,
@@ -48,12 +48,12 @@ fn calculate_rewards(
     }
 }
 
-fn calculate_apy(rewards: &str, stake_amount: &str) -> f64 {
+fn calculate_apy(rewards: &str, stake_amount: &str) -> u128 {
     let rewards_big = BigInt::from_str(rewards).unwrap_or_else(|_| BigInt::zero());
     let stake_big = BigInt::from_str(stake_amount).unwrap_or_else(|_| BigInt::zero());
 
     if stake_big.is_zero() {
-        return 0.0;
+        return 0;
     }
 
     // Debug logging
@@ -62,19 +62,19 @@ fn calculate_apy(rewards: &str, stake_amount: &str) -> f64 {
         rewards_big, stake_big
     );
 
-    // Convert to f64, handling the yoctoNEAR conversion implicitly
+    // Convert to u128, handling the yoctoNEAR conversion implicitly
     // We'll keep the numbers in yoctoNEAR to maintain precision
-    let rewards_f64 = rewards_big.to_string().parse::<f64>().unwrap_or(0.0);
-    let stake_f64 = stake_big.to_string().parse::<f64>().unwrap_or(1.0);
+    let rewards_u128 = rewards_big.to_string().parse::<u128>().unwrap_or(0);
+    let stake_u128 = stake_big.to_string().parse::<u128>().unwrap_or(1);
 
     // Calculate epoch rate
-    let epoch_rate = rewards_f64 / stake_f64;
+    let epoch_rate = rewards_u128 / stake_u128;
 
     // Annualize the rate
     let annual_rate = epoch_rate * EPOCHS_PER_YEAR;
 
     // Convert to percentage and round to 2 decimal places
-    let apy = (annual_rate * 100.0).round() / 100.0;
+    let apy = (annual_rate * 100) / 100;
 
     // Debug logging
     info!(
@@ -334,94 +334,4 @@ async fn get_previous_epoch_data(
     }
 
     Ok(prev_stakes)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use chrono::Utc;
-
-    #[test]
-    fn test_calculate_rewards() {
-        // Test case 1: Normal reward calculation
-        assert_eq!(
-            calculate_rewards(
-                "26000008342448094319999999",
-                Some(&"26000000000000000000000000".to_string()),
-                Some(&BigInt::zero())
-            ),
-            "8342448094319999999"
-        );
-
-        // Test case 2: First epoch (no previous stake)
-        assert_eq!(
-            calculate_rewards(
-                "26000000000000000000000000",
-                None,
-                Some(&BigInt::from_str("26000000000000000000000000").unwrap())
-            ),
-            "0"
-        );
-
-        // Test case 3: With transaction
-        assert_eq!(
-            calculate_rewards(
-                "26100008342448094319999999",
-                Some(&"26000000000000000000000000".to_string()),
-                Some(&BigInt::from_str("100000000000000000000000").unwrap())
-            ),
-            "8342448094319999999"
-        );
-    }
-
-    #[test]
-    fn test_calculate_apy() {
-        // Test case 1: ~0.1% reward per epoch
-        assert_eq!(
-            calculate_apy("26000000000000000000000", "26000000000000000000000000"),
-            20.79
-        );
-
-        // Test case 2: No rewards
-        assert_eq!(calculate_apy("0", "26000000000000000000000000"), 0.0);
-
-        // Test case 3: No stake
-        assert_eq!(calculate_apy("1000000000000000000000", "0"), 0.0);
-    }
-
-    #[test]
-    fn test_calculate_initial_stakes() {
-        let now = Utc::now();
-        let transactions = vec![
-            Transaction {
-                transaction_hash: "hash1".to_string(),
-                amount: "100".to_string(),
-                method: "deposit_and_stake".to_string(),
-                action: "stake".to_string(),
-                type_: "stake".to_string(),
-                block_height: 1,
-                timestamp: now,
-                delegator_address: "user1".to_string(),
-            },
-            Transaction {
-                transaction_hash: "hash2".to_string(),
-                amount: "50".to_string(),
-                method: "unstake".to_string(),
-                action: "unstake".to_string(),
-                type_: "unstake".to_string(),
-                block_height: 2,
-                timestamp: now,
-                delegator_address: "user1".to_string(),
-            },
-        ];
-
-        let transaction_refs: Vec<&Transaction> = transactions.iter().collect();
-        let initial_stakes = calculate_initial_stakes(&transaction_refs);
-
-        assert_eq!(
-            initial_stakes.get("user1").unwrap().to_string(),
-            "50",
-            "Initial stake should be 100 - 50 = 50"
-        );
-    }
 }

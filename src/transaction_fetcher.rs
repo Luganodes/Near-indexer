@@ -340,7 +340,7 @@ fn parse_staking_log(log: &str) -> Option<StakingAction> {
         if log.contains(keyword) {
             if let Some(amount) = log
                 .split_whitespace()
-                .find(|&part| part.parse::<f64>().is_ok())
+                .find(|&part| part.parse::<u128>().is_ok())
             {
                 return Some(StakingAction {
                     action: action.to_string(),
